@@ -1,35 +1,39 @@
 import React, { useState } from 'react';
-import { View, FlatList, Text } from 'react-native'; // You may switch Text to ui/Text later
+import { View } from 'react-native';
+import { Text, Button } from '../ui';
 import { styles } from '../../styles/styles';
-import { initialAzkaar } from '../../data/azkaar';
+import { initialAzkaar } from '../../data/azkaar'; // ✅ Correct import
 
-/**
- * Custom/TasbihList
- * Renders a FlatList of azkaar with their counts.
- * NOTE: Increment/Decrement buttons are intentionally NOT implemented.
- * Students will add + and - controls using UI/Button and update state accordingly.
- */
 export default function TasbihList() {
-  const [items, setItems] = useState(initialAzkaar);
+  const [list, setList] = useState(initialAzkaar); // ✅ Use azkaar data
 
-  // HINT ONLY (do not complete): you will need handlers like increment(id) / decrement(id)
+  const incrementCount = (id) => {
+    const updatedList = list.map(item =>
+      item.id === id ? { ...item, count: item.count + 1 } : item
+    );
+    setList(updatedList);
+  };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.itemRow}>
-      <Text style={styles.itemName}>{item.phrase}</Text>
-      <Text style={styles.counter}>{item.count}</Text>
-      {/* TODO: Add increment/decrement buttons here using ui/Button */}
-    </View>
-  );
+  const decrementCount = (id) => {
+    const updatedList = list.map(item =>
+      item.id === id ? { ...item, count: Math.max(0, item.count - 1) } : item
+    );
+    setList(updatedList);
+  };
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Tasbih Counter</Text>
-      <FlatList
-        data={items}
-        keyExtractor={(it) => it.id}
-        renderItem={renderItem}
-      />
+    <View style={styles.tasbihContainer}>
+      <Text style={styles.title}>Tasbih Counter</Text>
+      {list.map(item => (
+        <View key={item.id} style={styles.row}>
+          <Text style={styles.phrase}>{item.phrase}</Text>
+          <View style={styles.counterContainer}>
+            <Button title="-" onPress={() => decrementCount(item.id)} />
+            <Text style={styles.count}>{item.count}</Text>
+            <Button title="+" onPress={() => incrementCount(item.id)} />
+          </View>
+        </View>
+      ))}
     </View>
   );
 }
